@@ -1,8 +1,56 @@
+def validate_node_name(node):
+    if not isinstance(node, str):
+        return False, "Имя роутера должно быть строкой"
+
+    if not node.strip():
+        return False, "Имя роутера не может быть пустым"
+
+    return True, ""
+
+
+def validate_connection(from_node, to_node, latency, capacity):
+    is_valid, message = validate_node_name(from_node)
+    if not is_valid:
+        return False, message
+
+    is_valid, message = validate_node_name(to_node)
+    if not is_valid:
+        return False, message
+
+    if from_node == to_node:
+        return False, "Нельзя создать соединение роутера с самим собой"
+
+    if not isinstance(latency, int) or latency <= 0:
+        return False, "Задержка должна быть целым числом больше 0"
+
+    if not isinstance(capacity, int) or capacity <= 0:
+        return False, "Пропускная способность должна быть целым числом больше 0"
+
+    return True, ""
+
 def add_edge(graph, from_node, to_node, latency, capacity):
+    is_valid, message = validate_connection(
+        from_node,
+        to_node,
+        latency,
+        capacity
+    )
+
+    if not is_valid:
+        return False, message
+
     if from_node not in graph:
         graph[from_node] = []
 
+    if to_node not in graph:
+        graph[to_node] = []
+
+    if is_direct_connection(graph, from_node, to_node):
+        return False, f"Соединение {from_node} -> {to_node} уже существует"
+
     graph[from_node].append((to_node, latency, capacity))
+
+    return True, f"Соединение {from_node} -> {to_node} добавлено"
 
 
 def remove_edge(graph, from_node, to_node):

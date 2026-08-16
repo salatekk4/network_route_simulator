@@ -98,19 +98,35 @@ def add_edge_from_input(graph):
 
     try:
         latency = int(input("Введите задержку (мс): ").strip())
-        capacity = int(input("Введите пропускную способность (Мбит/с): ").strip())
+        capacity = int(
+            input("Введите пропускную способность (Мбит/с): ").strip()
+        )
     except ValueError:
-        print("Ошибка: задержка и пропускная способность должны быть числами")
+        print("Ошибка: задержка и пропускная способность должны быть целыми числами")
         return
 
-    if from_node not in graph:
-        graph[from_node] = []
+    success, message = add_edge(
+        graph,
+        from_node,
+        to_node,
+        latency,
+        capacity
+    )
 
-    if to_node not in graph:
-        graph[to_node] = []
+    print(message)
 
-    add_edge(graph, from_node, to_node, latency, capacity)
-    print(f"Соединение {from_node} -> {to_node} добавлено")
+def remove_node_from_input(graph):
+    node = input("Какой роутер удалить: ").strip()
+
+    is_valid, message = validate_node_name(node)
+    if not is_valid:
+        print(f"Ошибка: {message}")
+        return
+
+    if remove_node(graph, node):
+        print(f"Роутер {node} удален")
+    else:
+        print(f"Роутер {node} не найден")
 
 
 def remove_edge_from_input(graph):
@@ -246,6 +262,9 @@ def main():
                 print("Ошибка: файл не найден")
             except json.JSONDecodeError:
                 print("Ошибка: файл поврежден или не является JSON")
+            except ValueError as error:
+                print(f"Ошибка в структуре графа: {error}")
+
 
         elif choice == "0":
             print("Выход из программы")
