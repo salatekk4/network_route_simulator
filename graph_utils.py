@@ -147,3 +147,42 @@ def calculate_path_info(graph, path):
             min_capacity = capacity
 
     return total_latency, min_capacity
+
+def analyze_network(graph):
+    node_count = len(graph)
+    edge_count = 0
+    total_latency = 0
+
+    fastest_edge = None
+    slowest_edge = None
+    nodes_without_connections = []
+
+    for from_node, edges in graph.items():
+        if not edges:
+            nodes_without_connections.append(from_node)
+
+        for to_node, latency, capacity in edges:
+            edge_count += 1
+            total_latency += latency
+
+            edge = (from_node, to_node, latency, capacity)
+
+            if fastest_edge is None or latency < fastest_edge[2]:
+                fastest_edge = edge
+
+            if slowest_edge is None or latency > slowest_edge[2]:
+                slowest_edge = edge
+
+    average_latency = None
+
+    if edge_count > 0:
+        average_latency = total_latency / edge_count
+
+    return {
+        "node_count": node_count,
+        "edge_count": edge_count,
+        "average_latency": average_latency,
+        "fastest_edge": fastest_edge,
+        "slowest_edge": slowest_edge,
+        "nodes_without_connections": nodes_without_connections
+    }

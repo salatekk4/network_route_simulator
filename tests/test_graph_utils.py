@@ -5,7 +5,8 @@ from graph_utils import (
     remove_edge,
     remove_node,
     is_direct_connection,
-    calculate_path_info
+    calculate_path_info,
+    analyze_network
 )
 
 
@@ -17,6 +18,15 @@ class TestGraphUtils(unittest.TestCase):
             "C": [("D", 5, 60)],
             "D": []
         }
+    def test_analyze_network(self):
+        result = analyze_network(self.graph)
+
+        self.assertEqual(result["node_count"], 4)
+        self.assertEqual(result["edge_count"], 4)
+        self.assertEqual(result["average_latency"], 12.5)
+        self.assertEqual(result["fastest_edge"], ("C", "D", 5, 60))
+        self.assertEqual(result["slowest_edge"], ("A", "C", 20, 80))
+        self.assertEqual(result["nodes_without_connections"], ["D"])
 
     def test_add_valid_edge(self):
         success, message = add_edge(self.graph, "D", "E", 8, 50)

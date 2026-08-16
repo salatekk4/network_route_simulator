@@ -151,6 +151,46 @@ def remove_node_from_input(graph):
     else:
         print(f"Роутер {node} не найден")
 
+def print_network_analysis(graph):
+    analysis = analyze_network(graph)
+
+    print("\nАнализ сети")
+    print("-" * 35)
+    print(f"Количество роутеров: {analysis['node_count']}")
+    print(f"Количество соединений: {analysis['edge_count']}")
+
+    if analysis["average_latency"] is None:
+        print("Средняя задержка: нет соединений")
+        print("Самый быстрый канал: нет соединений")
+        print("Самый медленный канал: нет соединений")
+    else:
+        print(
+            f"Средняя задержка: "
+            f"{analysis['average_latency']:.2f} мс"
+        )
+
+        from_node, to_node, latency, capacity = analysis["fastest_edge"]
+        print(
+            f"Самый быстрый канал: {from_node} -> {to_node} "
+            f"({latency} мс, {capacity} Мбит/с)"
+        )
+
+        from_node, to_node, latency, capacity = analysis["slowest_edge"]
+        print(
+            f"Самый медленный канал: {from_node} -> {to_node} "
+            f"({latency} мс, {capacity} Мбит/с)"
+        )
+
+    nodes_without_connections = analysis["nodes_without_connections"]
+
+    if nodes_without_connections:
+        print(
+            "Роутеры без исходящих соединений: "
+            + ", ".join(nodes_without_connections)
+        )
+    else:
+        print("Роутеры без исходящих соединений: нет")
+
 
 def show_menu():
     print("\nМеню")
@@ -165,6 +205,7 @@ def show_menu():
     print("9. Удалить роутер")
     print("10. Сохранить граф в файл")
     print("11. Загрузить граф из файла")
+    print("12. Анализ сети")
     print("0. Выход")
 
 
@@ -264,6 +305,8 @@ def main():
                 print("Ошибка: файл поврежден или не является JSON")
             except ValueError as error:
                 print(f"Ошибка в структуре графа: {error}")
+        elif choice == "12":
+            print_network_analysis(graph)
 
 
         elif choice == "0":
